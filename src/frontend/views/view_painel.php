@@ -209,10 +209,21 @@ if ($logado) {
 </div>
 
     <!-- Comentário -->
-    <div class="flex flex-col">
-      <label class="text-gray-700 font-semibold mb-2">Comentário (opcional)</label>
-      <textarea name="conteudo" rows="5" class="w-full border border-gray-300 rounded-xl p-3 resize-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition" placeholder="Deixe sua opinião..."></textarea>
-    </div>
+<div class="flex flex-col">
+  <label class="text-gray-700 font-semibold mb-2">Comentário (opcional)</label>
+  <textarea 
+    id="comentario" 
+    name="conteudo" 
+    rows="5" 
+    class="w-full border border-gray-300 rounded-xl p-3 pb-7 resize-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition" 
+    placeholder="Deixe sua opinião..."
+  ></textarea>
+  <div class="flex justify-end mt-1">
+    <span id="contador" class="text-gray-400 text-sm">0 / 500</span>
+  </div>
+</div>
+
+
 
     <!-- Botão -->
     <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-green-400 text-white font-bold py-3 rounded-2xl shadow-lg hover:scale-105 transform transition-all">
@@ -354,17 +365,21 @@ if ($logado) {
 </div>
 <?php endif; ?>
 
+<div class="flex justify-start items-center gap-4 mt-4">
+  <a href="../../backend/export/export_csv.php" 
+     class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+     Exportar CSV
+  </a>
+  <a href="../../backend/export/export_pdf.php" 
+     class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+     Exportar PDF
+  </a>
+</div>
+
   <!-- quero adicionar aqui uma paginação, entao seria tipo uma seta o numero de paginas e outra seta < 1 2 ... 10 > tipo assim-->
 </div>
 
-<a href="../../backend/export/export_csv.php" 
-   class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
-   Exportar CSV
-</a>
-<a href="../../backend/export/export_pdf.php" 
-   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-   Exportar PDF
-</a>
+
 
 
 <script src="../js/avaliacao.js"></script>
@@ -445,6 +460,7 @@ function removerAvaliacao(id) {
     }
 }
 </script>
+
 <script>
 const tipoSelect = document.getElementById('tipoAvaliacao');
 const notaEstrelaDiv = document.getElementById('notaEstrela');
