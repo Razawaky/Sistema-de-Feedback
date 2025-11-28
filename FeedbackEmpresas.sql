@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 24/10/2025 às 11:43
--- Versão do servidor: 10.11.13-MariaDB-0ubuntu0.24.04.1
+-- Tempo de geração: 28/11/2025 às 17:16
+-- Versão do servidor: 8.0.43-0ubuntu0.24.04.2
 -- Versão do PHP: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,11 +28,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `acoes_moderacao` (
-  `id_acao` int(11) NOT NULL,
-  `id_sinalizacao` int(11) NOT NULL,
-  `id_moderador` int(11) NOT NULL,
-  `acao` enum('Removido','Advertência','Banimento','Nenhuma ação') NOT NULL,
-  `data_acao` datetime DEFAULT current_timestamp()
+  `id_acao` int NOT NULL,
+  `id_sinalizacao` int NOT NULL,
+  `id_moderador` int NOT NULL,
+  `acao` enum('Removido','Advertência','Banimento','Nenhuma ação') COLLATE utf8mb4_general_ci NOT NULL,
+  `data_acao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -42,34 +42,61 @@ CREATE TABLE `acoes_moderacao` (
 --
 
 CREATE TABLE `avaliacoes` (
-  `id_avaliacao` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `ip_usuario` varchar(64) NOT NULL,
-  `id_categoria` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `nota` int(11) DEFAULT NULL CHECK (`nota` between 1 and 5),
-  `data_avaliacao` datetime DEFAULT current_timestamp(),
-  `anonima` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id_avaliacao` int NOT NULL,
+  `id_usuario` int DEFAULT NULL,
+  `ip_usuario` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_categoria` int NOT NULL,
+  `id_empresa` int DEFAULT NULL,
+  `conteudo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `nota` int DEFAULT NULL,
+  `data_avaliacao` datetime DEFAULT CURRENT_TIMESTAMP,
+  `anonima` tinyint(1) DEFAULT '0',
+  `emoji` varchar(4) COLLATE utf8mb4_general_ci DEFAULT NULL
+) ;
 
 --
 -- Despejando dados para a tabela `avaliacoes`
 --
 
-INSERT INTO `avaliacoes` (`id_avaliacao`, `id_usuario`, `ip_usuario`, `id_categoria`, `conteudo`, `nota`, `data_avaliacao`, `anonima`) VALUES
-(2, 4, '127.0.0.1', 4, 'cariporr', 5, '2025-09-06 14:34:59', 0),
-(3, 4, '127.0.0.1', 2, 'ruim', 1, '2025-09-06 14:35:19', 0),
-(4, 4, '127.0.0.1', 4, 'meh', 2, '2025-09-06 14:35:52', 0),
-(6, 4, '127.0.0.1', 1, 'omg what is that', 1, '2025-09-06 15:01:02', 0),
-(7, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, 's,mdfsdkjfksdjhfks', 2, '2025-09-06 15:09:22', 1),
-(8, 2, '127.0.0.1', 4, 'horrivel, vomitei', 2, '2025-09-06 15:43:21', 0),
-(9, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, 'ruim', 2, '2025-09-12 13:09:30', 1),
-(10, 4, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, 'd', 1, '2025-09-12 13:12:29', 0),
-(11, 2, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, 'maravilhoso', 5, '2025-09-12 14:02:55', 0),
-(12, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, 'fdhd', 3, '2025-09-18 17:09:08', 1),
-(13, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, 'horrivel, horroroso, me faz mal', 1, '2025-09-30 14:27:20', 1),
-(14, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, 'AMBIENTE MAIS OU MENOS', 3, '2025-10-10 14:46:55', 1),
-(15, 55, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, 'Sim', 4, '2025-10-22 15:40:19', 0);
+INSERT INTO `avaliacoes` (`id_avaliacao`, `id_usuario`, `ip_usuario`, `id_categoria`, `id_empresa`, `conteudo`, `nota`, `data_avaliacao`, `anonima`, `emoji`) VALUES
+(18, 2, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'O serviço foi excepcional, desde o primeiro contato até a entrega final. Todos os funcionários foram muito atenciosos e demonstraram conhecimento técnico profundo. Recomendo a todos que buscam qualidade e eficiência.', 5, '2025-01-15 10:32:21', 0, NULL),
+(19, 4, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Infelizmente o produto demorou muito a chegar e quando chegou estava com pequenos defeitos. O atendimento ao cliente demorou a responder e não solucionou meu problema rapidamente, o que gerou frustração.', NULL, '2025-02-20 14:15:42', 0, '😠'),
+(20, 5, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'Recebi o produto muito antes do esperado e tudo estava funcionando perfeitamente. A comunicação da equipe foi clara e objetiva, e eu me senti muito bem atendido durante todo o processo.', 5, '2025-03-12 09:47:11', 0, NULL),
+(21, 6, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'O serviço prestado não atendeu minhas expectativas. O suporte demorou a responder e a solução apresentada não resolveu meu problema. Esperava mais atenção e eficiência.', NULL, '2025-04-01 18:32:55', 0, '😐'),
+(22, 9, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Tudo funcionou de maneira muito satisfatória. Desde a compra até o recebimento do produto, percebi cuidado e atenção aos detalhes. Fiquei impressionado com a rapidez e a qualidade do atendimento.', 5, '2025-05-05 11:20:43', 0, NULL),
+(23, 10, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'O produto chegou com falhas e não correspondeu à descrição. Tentei contato diversas vezes e não obtive resposta imediata. Fiquei bastante desapontado com a experiência.', NULL, '2025-06-18 13:55:29', 0, '😠'),
+(24, 11, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Gostei muito da experiência de compra. O suporte foi muito prestativo, esclareceu todas as minhas dúvidas e me ajudou a escolher a melhor opção. Produto de ótima qualidade e entrega dentro do prazo.', 5, '2025-07-02 15:42:10', 0, NULL),
+(25, 12, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, NULL, NULL, '2025-08-11 09:12:34', 0, '😊'),
+(26, 13, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'O produto chegou no prazo e em ótimo estado. Fiquei satisfeito com a forma como tudo foi organizado e com a comunicação clara durante o processo de compra. Recomendo sem dúvidas.', 5, '2025-09-23 17:25:50', 0, NULL),
+(27, 14, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'O atendimento foi bom, mas tive alguns problemas com a entrega que demorou mais do que o esperado. Precisa melhorar a logística e o acompanhamento das entregas.', NULL, '2025-10-05 12:48:21', 0, '😐'),
+(28, 15, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Produto de excelente qualidade, muito bem embalado e entregue rapidamente. A experiência de compra foi muito satisfatória, recomendo para quem busca confiança e bom atendimento.', 5, '2025-11-19 14:33:12', 0, NULL),
+(29, 16, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'A equipe demorou a responder minhas dúvidas e o produto não correspondeu às minhas expectativas. Infelizmente, a experiência foi frustrante e deixo como crítica construtiva.', NULL, '2025-12-08 16:05:47', 0, '😐'),
+(30, 18, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Tudo ocorreu perfeitamente, o produto era exatamente como descrito, a entrega foi rápida e o atendimento foi impecável. Fiquei muito satisfeito e pretendo comprar novamente.', 5, '2025-03-15 10:15:29', 0, NULL),
+(31, 19, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Produto chegou com problemas, tive dificuldade para contactar o suporte e a solução demorou a aparecer. Uma experiência frustrante que precisa ser melhorada.', NULL, '2025-04-21 13:42:12', 0, '😠'),
+(32, 20, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, NULL, 4, '2025-05-18 15:55:33', 0, NULL),
+(33, 21, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Gostei muito da atenção da equipe e da qualidade do produto. Tudo dentro do esperado, muito satisfeito com a experiência.', 5, '2025-06-10 10:20:44', 0, NULL),
+(34, 22, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Entrega atrasou, produto chegou parcialmente danificado e o suporte demorou a responder. Não fiquei satisfeito.', NULL, '2025-07-15 17:05:12', 0, '😠'),
+(35, 23, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'Excelente atendimento, equipe muito simpática e atenciosa. Produto chegou rápido e em perfeito estado. Recomendo fortemente.', 5, '2025-08-23 11:48:55', 0, NULL),
+(36, 24, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, NULL, NULL, '2025-09-10 09:55:21', 0, '😊'),
+(37, 25, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Produto chegou antes do prazo, muito bem embalado e funcionando corretamente. Experiência excelente.', 5, '2025-10-05 16:32:33', 0, NULL),
+(38, 26, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'Não gostei da experiência, demorou muito e o suporte não foi eficaz. Esperava mais.', NULL, '2025-11-12 14:12:22', 0, '😐'),
+(39, 27, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Tudo certo com a compra, produto de qualidade e entrega rápida. Fiquei muito satisfeito.', 5, '2025-12-01 12:55:44', 0, NULL),
+(40, 28, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Produto danificado na entrega, equipe demorou a resolver e não fiquei satisfeito com o atendimento.', NULL, '2025-01-29 15:44:33', 0, '😠'),
+(41, 29, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, NULL, NULL, '2025-02-18 11:30:22', 0, '😃'),
+(42, 31, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'Produto muito bom, entrega rápida, equipe prestativa e ótima experiência de compra.', 5, '2025-03-05 14:12:11', 0, NULL),
+(43, 32, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Não fiquei satisfeito, produto chegou com defeito e suporte demorou.', NULL, '2025-04-20 09:55:33', 0, '😠'),
+(44, 33, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'Muito bom, recomendo fortemente a todos que desejam qualidade e bom atendimento.', 5, '2025-05-15 16:20:44', 0, NULL),
+(45, 34, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, NULL, NULL, '2025-06-12 11:32:12', 0, '😃'),
+(46, 35, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Produto excelente, atendimento rápido e equipe muito simpática.', 5, '2025-07-05 14:55:33', 0, NULL),
+(47, 36, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'Demorou muito para entregar e o suporte não respondeu rápido. Decepcionante.', NULL, '2025-08-23 12:22:11', 0, '😠'),
+(50, 47, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, NULL, 'O ambiente de restaurante, está parecendo mais um chiqueiro, nunca vi igual.... Péssimo.', 1, '2025-10-25 21:22:41', 0, NULL),
+(51, 4, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 3, NULL, 'Ai que lugar maravilhoso, sério, e com preços esplêndidos! Vale muito a pena galera, de verdade! Estou estupefado com tantas melhorias!', NULL, '2025-10-25 21:25:01', 0, '😍'),
+(52, 4, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, NULL, 'abulele', NULL, '2025-10-25 21:46:45', 0, '😠'),
+(53, 4, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 1, NULL, 'bleble', 3, '2025-10-25 21:47:10', 0, NULL),
+(55, 47, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, NULL, 'muito quente', 1, '2025-10-26 13:30:43', 0, NULL),
+(56, 47, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 2, NULL, 'ruim >:c', NULL, '2025-10-28 15:23:37', 0, '😠'),
+(59, NULL, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, NULL, 'lsasndkasjdhajsaskd', 3, '2025-10-31 16:00:00', 1, NULL),
+(60, 57, '12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0', 4, 36, 'p', 1, '2025-11-28 13:11:49', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -78,8 +105,8 @@ INSERT INTO `avaliacoes` (`id_avaliacao`, `id_usuario`, `ip_usuario`, `id_catego
 --
 
 CREATE TABLE `categorias_avaliacao` (
-  `id_categoria` int(11) NOT NULL,
-  `nome_categoria` varchar(100) NOT NULL
+  `id_categoria` int NOT NULL,
+  `nome_categoria` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -100,9 +127,9 @@ INSERT INTO `categorias_avaliacao` (`id_categoria`, `nome_categoria`) VALUES
 --
 
 CREATE TABLE `config_selos` (
-  `id_config` int(11) NOT NULL,
-  `id_selo` int(11) NOT NULL,
-  `regra` text DEFAULT NULL
+  `id_config` int NOT NULL,
+  `id_selo` int NOT NULL,
+  `regra` text COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -112,9 +139,9 @@ CREATE TABLE `config_selos` (
 --
 
 CREATE TABLE `credenciais` (
-  `id_credencial` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `senha_hash` varchar(255) NOT NULL,
+  `id_credencial` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `senha_hash` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `ultimo_login` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -124,7 +151,7 @@ CREATE TABLE `credenciais` (
 
 INSERT INTO `credenciais` (`id_credencial`, `id_usuario`, `senha_hash`, `ultimo_login`) VALUES
 (2, 2, '$2y$10$PxonKzM7bj8P9fjbJTwME.3yunFHNg4Vl.SZKh3RGmjG8xg2GYgi6', '2025-09-12 14:02:39'),
-(3, 4, '$2y$10$9VaDBj8KZE5TVtrZojaUWubOwA9I7sozN0KKkdaZmxXTtOjgO/RNC', '2025-09-18 22:27:20'),
+(3, 4, '$2y$10$9VaDBj8KZE5TVtrZojaUWubOwA9I7sozN0KKkdaZmxXTtOjgO/RNC', '2025-10-25 21:30:23'),
 (4, 5, '$2y$10$bUk9R23C5OXcL6X3MosLqOUPyJxji2NuBcS5ZM4J0F1LMG2Kk/03y', '2025-09-06 15:10:41'),
 (5, 6, '$2y$10$8u8FEsV5I0VMlk3Wl4TlI.IwgpHIRb6l.LwzMm/SraMrBli3UI5oC', NULL),
 (6, 9, '$2y$10$3euMIveaIxwS9otc8yLA8..hVrIPQD9ZbIEJvxyXDZMFx1EzMcVk6', NULL),
@@ -161,10 +188,13 @@ INSERT INTO `credenciais` (`id_credencial`, `id_usuario`, `senha_hash`, `ultimo_
 (37, 42, '$2y$10$QA6a3.MjI9OKodCgzzrZKesb69B5HAOKqPig6H2rDD27AC6JuY5VC', NULL),
 (38, 45, '$2y$10$rVKtAQc.hsfeIwMcuqTaX.zMiSGgGiziqFxh10BYq2xeSAYH1jyP6', NULL),
 (39, 46, '$2y$10$T5NG.MYgRuzLA/LCsrolwugTMhas58tXBz47mnBJr7BCw8t0vgT22', NULL),
-(40, 47, '$2y$10$8Oambm9Ti249NsUBQHmnaecsWYc0hjgTUyhLXAmaESpBFDGyDzTaO', '2025-10-17 14:52:00'),
+(40, 47, '$2y$10$8Oambm9Ti249NsUBQHmnaecsWYc0hjgTUyhLXAmaESpBFDGyDzTaO', '2025-10-31 16:00:26'),
 (41, 48, '$2y$10$jvyzyQxH1BLFskcBPyvfguEIvAvW7DGfFEicfhvVReciVOhyUjMhu', NULL),
 (42, 54, '$2y$10$eKI9rumD6Z9KeNCRnLbpzu0HHnwQmqu9/wYnZnryuDVQpn/2SNuY2', '2025-10-17 14:10:07'),
-(43, 55, '$2y$10$G83xIZvYj.wVSJ1nABj8YeY8uVzGh2XcxsLuzk.YEAtzm56R28jY2', '2025-10-22 15:39:58');
+(43, 55, '$2y$10$G83xIZvYj.wVSJ1nABj8YeY8uVzGh2XcxsLuzk.YEAtzm56R28jY2', '2025-10-22 15:39:58'),
+(44, 56, '$2y$10$ga33Kohp4PE/SZk74TJ.9.yulJ/VQnZ5puMsy1zplGKbTcTCKA/wO', '2025-10-31 16:21:05'),
+(45, 57, '$2y$10$/ghKXO8hrevgIQ8Hee9v4uf6m6/cK1cDNYNPS1PVlWTUGYE5pYYRm', '2025-11-28 13:11:35'),
+(46, 58, '$2y$10$QZ76Q1qbOMmXE5fhmZQDE.IuM1LXtECBF42JpkU/Jzgk1cV7Wwqpm', '2025-11-28 14:16:04');
 
 -- --------------------------------------------------------
 
@@ -173,11 +203,44 @@ INSERT INTO `credenciais` (`id_credencial`, `id_usuario`, `senha_hash`, `ultimo_
 --
 
 CREATE TABLE `dados_grafico` (
-  `id_dado` int(11) NOT NULL,
-  `id_relatorio` int(11) NOT NULL,
-  `chave` varchar(100) DEFAULT NULL,
+  `id_dado` int NOT NULL,
+  `id_relatorio` int NOT NULL,
+  `chave` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `valor` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `denuncias`
+--
+
+CREATE TABLE `denuncias` (
+  `id_denuncia` int NOT NULL,
+  `id_avaliacao` int NOT NULL,
+  `id_denunciante` int NOT NULL,
+  `motivo` text COLLATE utf8mb4_general_ci,
+  `data_denuncia` datetime DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pendente','analisada') COLLATE utf8mb4_general_ci DEFAULT 'pendente'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `denuncias`
+--
+
+INSERT INTO `denuncias` (`id_denuncia`, `id_avaliacao`, `id_denunciante`, `motivo`, `data_denuncia`, `status`) VALUES
+(1, 19, 4, 'Conteúdo ofensivo', '2025-02-21 10:15:32', 'pendente'),
+(2, 21, 4, 'Spam ou propaganda', '2025-04-02 12:42:11', 'analisada'),
+(3, 23, 4, 'Conteúdo inapropriado', '2025-06-19 09:35:50', 'pendente'),
+(4, 25, 4, 'Não condiz com a avaliação', '2025-08-12 15:22:44', 'analisada'),
+(5, 28, 4, 'Informações falsas', '2025-11-20 11:10:33', 'pendente'),
+(6, 30, 4, 'Ofensa pessoal', '2025-03-16 14:42:21', 'pendente'),
+(7, 33, 47, 'Conteúdo ofensivo', '2025-06-11 10:55:12', 'pendente'),
+(8, 36, 47, 'Spam ou propaganda', '2025-09-11 09:20:44', 'analisada'),
+(9, 40, 47, 'Não condiz com a avaliação', '2025-02-01 16:45:33', 'pendente'),
+(10, 43, 47, 'Informações falsas', '2025-04-21 13:12:55', 'analisada'),
+(11, 32, 47, 'fala né djabo', '2025-10-28 15:24:12', 'pendente'),
+(12, 29, 47, 'nao concordo', '2025-10-31 16:01:43', 'pendente');
 
 -- --------------------------------------------------------
 
@@ -186,12 +249,12 @@ CREATE TABLE `dados_grafico` (
 --
 
 CREATE TABLE `feedback_respostas` (
-  `id_feedback` int(11) NOT NULL,
-  `id_avaliacao` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_tipo` int(11) NOT NULL,
-  `comentario` text DEFAULT NULL,
-  `data_feedback` datetime DEFAULT current_timestamp()
+  `id_feedback` int NOT NULL,
+  `id_avaliacao` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `id_tipo` int NOT NULL,
+  `comentario` text COLLATE utf8mb4_general_ci,
+  `data_feedback` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -201,8 +264,8 @@ CREATE TABLE `feedback_respostas` (
 --
 
 CREATE TABLE `flags_proibidas` (
-  `id_flag` int(11) NOT NULL,
-  `descricao` varchar(150) NOT NULL
+  `id_flag` int NOT NULL,
+  `descricao` varchar(150) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -212,11 +275,11 @@ CREATE TABLE `flags_proibidas` (
 --
 
 CREATE TABLE `historico_avaliacoes` (
-  `id_historico` int(11) NOT NULL,
-  `id_avaliacao` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `acao` enum('Criada','Editada','Removida','Restaurada') NOT NULL,
-  `data_historico` datetime DEFAULT current_timestamp()
+  `id_historico` int NOT NULL,
+  `id_avaliacao` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `acao` enum('Criada','Editada','Removida','Restaurada') COLLATE utf8mb4_general_ci NOT NULL,
+  `data_historico` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -226,11 +289,11 @@ CREATE TABLE `historico_avaliacoes` (
 --
 
 CREATE TABLE `historico_verificacao` (
-  `id_historico` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_solicitacao` int(11) NOT NULL,
-  `resultado` varchar(100) DEFAULT NULL,
-  `data_historico` datetime DEFAULT current_timestamp()
+  `id_historico` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `id_solicitacao` int NOT NULL,
+  `resultado` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_historico` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -240,10 +303,10 @@ CREATE TABLE `historico_verificacao` (
 --
 
 CREATE TABLE `log_moderacao` (
-  `id_log` int(11) NOT NULL,
-  `id_acao` int(11) NOT NULL,
-  `detalhes` text DEFAULT NULL,
-  `data_log` datetime DEFAULT current_timestamp()
+  `id_log` int NOT NULL,
+  `id_acao` int NOT NULL,
+  `detalhes` text COLLATE utf8mb4_general_ci,
+  `data_log` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -253,10 +316,10 @@ CREATE TABLE `log_moderacao` (
 --
 
 CREATE TABLE `log_sistema` (
-  `id_log` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `evento` varchar(255) DEFAULT NULL,
-  `data_log` datetime DEFAULT current_timestamp()
+  `id_log` int NOT NULL,
+  `id_usuario` int DEFAULT NULL,
+  `evento` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_log` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -266,11 +329,11 @@ CREATE TABLE `log_sistema` (
 --
 
 CREATE TABLE `metricas` (
-  `id_metrica` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `nome` varchar(100) DEFAULT NULL,
+  `id_metrica` int NOT NULL,
+  `id_usuario` int DEFAULT NULL,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `valor` decimal(10,2) DEFAULT NULL,
-  `data_metrica` datetime DEFAULT current_timestamp()
+  `data_metrica` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -280,11 +343,11 @@ CREATE TABLE `metricas` (
 --
 
 CREATE TABLE `notificacoes_empresas` (
-  `id_notificacao` int(11) NOT NULL,
-  `id_resposta_empresa` int(11) DEFAULT NULL,
-  `mensagem` varchar(255) DEFAULT NULL,
-  `lida` enum('Sim','Não') DEFAULT 'Não',
-  `data_notificacao` datetime DEFAULT current_timestamp()
+  `id_notificacao` int NOT NULL,
+  `id_resposta_empresa` int DEFAULT NULL,
+  `mensagem` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `lida` enum('Sim','Não') COLLATE utf8mb4_general_ci DEFAULT 'Não',
+  `data_notificacao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -294,10 +357,10 @@ CREATE TABLE `notificacoes_empresas` (
 --
 
 CREATE TABLE `perfis_usuario` (
-  `id_perfil` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `bio` text DEFAULT NULL,
-  `foto_perfil` varchar(255) DEFAULT NULL
+  `id_perfil` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `bio` text COLLATE utf8mb4_general_ci,
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -307,10 +370,10 @@ CREATE TABLE `perfis_usuario` (
 --
 
 CREATE TABLE `relatorios` (
-  `id_relatorio` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `titulo` varchar(150) DEFAULT NULL,
-  `data_relatorio` datetime DEFAULT current_timestamp()
+  `id_relatorio` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `titulo` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_relatorio` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -320,10 +383,10 @@ CREATE TABLE `relatorios` (
 --
 
 CREATE TABLE `respostas_empresas` (
-  `id_resposta_empresa` int(11) NOT NULL,
-  `id_avaliacao` int(11) NOT NULL,
-  `resposta` text NOT NULL,
-  `data_resposta` datetime DEFAULT current_timestamp()
+  `id_resposta_empresa` int NOT NULL,
+  `id_avaliacao` int NOT NULL,
+  `resposta` text COLLATE utf8mb4_general_ci NOT NULL,
+  `data_resposta` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -333,9 +396,9 @@ CREATE TABLE `respostas_empresas` (
 --
 
 CREATE TABLE `selos` (
-  `id_selo` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `descricao` varchar(255) DEFAULT NULL
+  `id_selo` int NOT NULL,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -345,10 +408,10 @@ CREATE TABLE `selos` (
 --
 
 CREATE TABLE `selos_usuario` (
-  `id_selo_usuario` int(11) NOT NULL,
-  `id_selo` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `data_concessao` datetime DEFAULT current_timestamp()
+  `id_selo_usuario` int NOT NULL,
+  `id_selo` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `data_concessao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -358,9 +421,9 @@ CREATE TABLE `selos_usuario` (
 --
 
 CREATE TABLE `sessoes` (
-  `id_sessao` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `id_sessao` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `expiracao` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -415,7 +478,13 @@ INSERT INTO `sessoes` (`id_sessao`, `id_usuario`, `token`, `expiracao`) VALUES
 (66, 47, 'bb77ec70c28f6f205a3781d8ecc0069ecadd0305e667103c534c5ad7b7f55d09', '2025-10-14 19:16:36'),
 (68, 48, 'e31b9a5983c1a13060f9d5ead705d9c508daea021a2af5a78f3e9753843116a3', '2025-10-17 14:33:27'),
 (69, 54, '8118f0368c08143567307c93a9ea449d785042acc26418c6944aaf097daae8c4', '2025-10-17 14:39:02'),
-(72, 55, '4ff338aadc31567b7521ebdf4962fda13e39287777ccf2db0da2010fa8a93553', '2025-10-22 16:09:42');
+(72, 55, '4ff338aadc31567b7521ebdf4962fda13e39287777ccf2db0da2010fa8a93553', '2025-10-22 16:09:42'),
+(76, 47, 'fbecac00b13a5fa2f9418e428853a0390cd8251935bac2e246fcc63e1cac9250', '2025-10-24 10:41:30'),
+(85, 47, 'ed8d10df629f8e99a722c4992a8d52e974a710de7e80f1a86d2a0d551cfedadb', '2025-10-25 19:56:14'),
+(95, 56, '3669fe3829ff5e5357de9be2510cafcf6130ea601b5f32c8063051e9a0cf54ae', '2025-10-31 16:50:52'),
+(97, 57, '40e6de4b0dbb64ab6953603268f657abe56a79e5cdadc607c6fe4ddad77272b9', '2025-11-28 13:41:21'),
+(99, 58, '8d58c0f3d67b92ff4fc090976c7df8cb68391faae37704f547a70865d4923a60', '2025-11-28 14:32:14'),
+(100, 58, '1b37ab977796ee5c7c926190c253a4bff3e5faf1b6c86bbfd7fe8f3687eab7aa', '2025-11-28 14:46:06');
 
 -- --------------------------------------------------------
 
@@ -424,11 +493,11 @@ INSERT INTO `sessoes` (`id_sessao`, `id_usuario`, `token`, `expiracao`) VALUES
 --
 
 CREATE TABLE `sinalizacoes_usuario` (
-  `id_sinalizacao` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_avaliacao` int(11) NOT NULL,
-  `id_flag` int(11) NOT NULL,
-  `data_sinalizacao` datetime DEFAULT current_timestamp()
+  `id_sinalizacao` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `id_avaliacao` int NOT NULL,
+  `id_flag` int NOT NULL,
+  `data_sinalizacao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -438,10 +507,10 @@ CREATE TABLE `sinalizacoes_usuario` (
 --
 
 CREATE TABLE `solicitacoes_verificacao` (
-  `id_solicitacao` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `status` enum('Pendente','Aprovado','Rejeitado') DEFAULT 'Pendente',
-  `data_solicitacao` datetime DEFAULT current_timestamp()
+  `id_solicitacao` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `status` enum('Pendente','Aprovado','Rejeitado') COLLATE utf8mb4_general_ci DEFAULT 'Pendente',
+  `data_solicitacao` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -451,8 +520,8 @@ CREATE TABLE `solicitacoes_verificacao` (
 --
 
 CREATE TABLE `tipos_feedback` (
-  `id_tipo` int(11) NOT NULL,
-  `nome_tipo` varchar(50) NOT NULL
+  `id_tipo` int NOT NULL,
+  `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -462,8 +531,8 @@ CREATE TABLE `tipos_feedback` (
 --
 
 CREATE TABLE `tipos_usuario` (
-  `id_tipo` int(11) NOT NULL,
-  `nome_tipo` varchar(50) NOT NULL
+  `id_tipo` int NOT NULL,
+  `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -482,12 +551,12 @@ INSERT INTO `tipos_usuario` (`id_tipo`, `nome_tipo`) VALUES
 --
 
 CREATE TABLE `usuarios` (
-  `id_usuario` int(11) NOT NULL,
-  `id_tipo` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `data_cadastro` datetime DEFAULT current_timestamp(),
-  `cnpj` varchar(18) DEFAULT NULL
+  `id_usuario` int NOT NULL,
+  `id_tipo` int NOT NULL,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `data_cadastro` datetime DEFAULT CURRENT_TIMESTAMP,
+  `cnpj` varchar(18) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -536,7 +605,10 @@ INSERT INTO `usuarios` (`id_usuario`, `id_tipo`, `nome`, `email`, `data_cadastro
 (47, 1, 'Root', 'root@gmail.com', '2025-10-14 18:46:36', NULL),
 (48, 3, 'uel', 'uel@gmail.com', '2025-10-17 14:03:27', NULL),
 (54, 3, 'uel', 'ueQl@gmail.com', '2025-10-17 14:09:02', NULL),
-(55, 1, 'Jadiena', 'jadegamer@gmail.com', '2025-10-22 15:39:42', NULL);
+(55, 1, 'Jadiena', 'jadegamer@gmail.com', '2025-10-22 15:39:42', NULL),
+(56, 2, 'jahsjhasd', 'ajhsgjahsd@gmail.com', '2025-10-31 16:20:52', '11.111.111/1111-11'),
+(57, 1, 'p', 'p@p.com', '2025-11-28 13:11:21', NULL),
+(58, 2, 'pp', 'pp@gmail.com', '2025-11-28 14:02:14', '11.111.111/1111-11');
 
 --
 -- Índices para tabelas despejadas
@@ -584,6 +656,14 @@ ALTER TABLE `credenciais`
 ALTER TABLE `dados_grafico`
   ADD PRIMARY KEY (`id_dado`),
   ADD KEY `id_relatorio` (`id_relatorio`);
+
+--
+-- Índices de tabela `denuncias`
+--
+ALTER TABLE `denuncias`
+  ADD PRIMARY KEY (`id_denuncia`),
+  ADD KEY `fk_denuncia_avaliacao` (`id_avaliacao`),
+  ADD KEY `fk_denuncia_usuario` (`id_denunciante`);
 
 --
 -- Índices de tabela `feedback_respostas`
@@ -732,151 +812,157 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `acoes_moderacao`
 --
 ALTER TABLE `acoes_moderacao`
-  MODIFY `id_acao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_acao` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `avaliacoes`
 --
 ALTER TABLE `avaliacoes`
-  MODIFY `id_avaliacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_avaliacao` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `categorias_avaliacao`
 --
 ALTER TABLE `categorias_avaliacao`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_categoria` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `config_selos`
 --
 ALTER TABLE `config_selos`
-  MODIFY `id_config` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_config` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `credenciais`
 --
 ALTER TABLE `credenciais`
-  MODIFY `id_credencial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_credencial` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de tabela `dados_grafico`
 --
 ALTER TABLE `dados_grafico`
-  MODIFY `id_dado` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_dado` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `denuncias`
+--
+ALTER TABLE `denuncias`
+  MODIFY `id_denuncia` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `feedback_respostas`
 --
 ALTER TABLE `feedback_respostas`
-  MODIFY `id_feedback` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_feedback` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `flags_proibidas`
 --
 ALTER TABLE `flags_proibidas`
-  MODIFY `id_flag` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_flag` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `historico_avaliacoes`
 --
 ALTER TABLE `historico_avaliacoes`
-  MODIFY `id_historico` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_historico` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `historico_verificacao`
 --
 ALTER TABLE `historico_verificacao`
-  MODIFY `id_historico` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_historico` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `log_moderacao`
 --
 ALTER TABLE `log_moderacao`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_log` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `log_sistema`
 --
 ALTER TABLE `log_sistema`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_log` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `metricas`
 --
 ALTER TABLE `metricas`
-  MODIFY `id_metrica` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_metrica` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes_empresas`
 --
 ALTER TABLE `notificacoes_empresas`
-  MODIFY `id_notificacao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_notificacao` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `perfis_usuario`
 --
 ALTER TABLE `perfis_usuario`
-  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_perfil` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `relatorios`
 --
 ALTER TABLE `relatorios`
-  MODIFY `id_relatorio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_relatorio` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `respostas_empresas`
 --
 ALTER TABLE `respostas_empresas`
-  MODIFY `id_resposta_empresa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_resposta_empresa` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `selos`
 --
 ALTER TABLE `selos`
-  MODIFY `id_selo` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_selo` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `selos_usuario`
 --
 ALTER TABLE `selos_usuario`
-  MODIFY `id_selo_usuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_selo_usuario` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `sessoes`
 --
 ALTER TABLE `sessoes`
-  MODIFY `id_sessao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `id_sessao` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT de tabela `sinalizacoes_usuario`
 --
 ALTER TABLE `sinalizacoes_usuario`
-  MODIFY `id_sinalizacao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_sinalizacao` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `solicitacoes_verificacao`
 --
 ALTER TABLE `solicitacoes_verificacao`
-  MODIFY `id_solicitacao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_solicitacao` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `tipos_feedback`
 --
 ALTER TABLE `tipos_feedback`
-  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipo` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `tipos_usuario`
 --
 ALTER TABLE `tipos_usuario`
-  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_tipo` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id_usuario` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- Restrições para tabelas despejadas
@@ -913,6 +999,13 @@ ALTER TABLE `credenciais`
 --
 ALTER TABLE `dados_grafico`
   ADD CONSTRAINT `dados_grafico_ibfk_1` FOREIGN KEY (`id_relatorio`) REFERENCES `relatorios` (`id_relatorio`);
+
+--
+-- Restrições para tabelas `denuncias`
+--
+ALTER TABLE `denuncias`
+  ADD CONSTRAINT `fk_denuncia_avaliacao` FOREIGN KEY (`id_avaliacao`) REFERENCES `avaliacoes` (`id_avaliacao`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_denuncia_usuario` FOREIGN KEY (`id_denunciante`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `feedback_respostas`

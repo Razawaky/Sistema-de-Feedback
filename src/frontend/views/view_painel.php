@@ -25,13 +25,22 @@ $outrosCategoria = executarConsulta("
     WHERE nome_categoria = 'Outros'
 ")->fetch(PDO::FETCH_ASSOC);
 
+// Buscar empresas cadastradas
+$empresas = executarConsulta("
+    SELECT id_usuario, nome 
+    FROM usuarios
+    WHERE id_tipo = 2
+    ORDER BY nome ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 // Buscar avaliações do usuário (se logado)
 $avaliacoesUsuario = [];
 if ($logado) {
     $avaliacoesUsuario = executarConsulta("
-        SELECT a.id_avaliacao, c.nome_categoria, a.conteudo, a.nota, a.emoji, a.data_avaliacao
+        SELECT a.id_avaliacao, c.nome_categoria, a.conteudo, a.nota, a.emoji, a.data_avaliacao, u.nome AS nome_empresa
         FROM avaliacoes a
         JOIN categorias_avaliacao c ON a.id_categoria = c.id_categoria
+        LEFT JOIN usuarios u ON a.id_empresa = u.id_usuario AND u.id_tipo = 2
         WHERE a.id_usuario = ?
         ORDER BY a.data_avaliacao DESC
     ", [$idUsuario])->fetchAll(PDO::FETCH_ASSOC);
@@ -58,20 +67,30 @@ $totalPaginas = ceil($totalAvaliacoes / $limite);
 
 // Buscar as avaliações (mesma condição)
 $sqlAvaliacoes = "
-    SELECT a.id_avaliacao,
-           c.nome_categoria,
-           a.conteudo,
-           a.nota,
-           a.emoji,
-           a.data_avaliacao,
-           u.nome AS nome_usuario
+    SELECT 
+        a.id_avaliacao,
+        c.nome_categoria,
+        a.conteudo,
+        a.nota,
+        a.emoji,
+        a.data_avaliacao,
+
+        u.nome AS nome_usuario,
+
+        emp.nome AS nome_empresa
+
     FROM avaliacoes a
     JOIN categorias_avaliacao c ON a.id_categoria = c.id_categoria
+
     LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
+
+    LEFT JOIN usuarios emp ON a.id_empresa = emp.id_usuario AND emp.id_tipo = 2
+
     $condicaoUsuario
     ORDER BY a.data_avaliacao DESC
     LIMIT :limite OFFSET :offset
 ";
+
 $stmtAval = $pdo->prepare($sqlAvaliacoes);
 if ($logado) {
     $stmtAval->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
@@ -129,6 +148,21 @@ if ($logado) {
 
   <!-- Formulário de Avaliação -->
   <form id="formAvaliacao" class="space-y-5">
+      <!-- Empresa -->
+  <div class="flex flex-col">
+    <label class="text-gray-700 font-semibold mb-2">Empresa</label>
+    <select name="id_empresa" required
+      class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+      <option value="">Selecione a empresa</option>
+
+      <?php foreach ($empresas as $emp): ?>
+        <option value="<?= $emp['id_usuario'] ?>">
+          <?= htmlspecialchars($emp['nome']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
     <!-- Categoria -->
     <div class="flex flex-col">
       <label class="text-gray-700 font-semibold mb-2">Categoria da avaliação</label>
@@ -250,6 +284,9 @@ if ($logado) {
           <?php foreach($avaliacoesUsuario as $av): ?>
               <div class="border border-gray-300 rounded-xl p-4 flex justify-between items-start bg-gray-50">
                   <div>
+                      <p class="font-semibold text-purple-700">
+                          Empresa: <?= htmlspecialchars($av['nome_empresa'] ?? 'Desconhecida') ?>
+                      </p>
                       <p class="font-semibold flex items-center gap-1">
                           <?= htmlspecialchars($av['nome_categoria']) ?> - Nota:
 
@@ -300,6 +337,9 @@ if ($logado) {
             <div class="border <?= $classeFundo ?> rounded-xl p-4 shadow-sm hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                     <div>
+                      <p class="text-purple-700 font-semibold">
+                          Empresa avaliada: <?= htmlspecialchars($av['nome_empresa'] ?? 'Desconhecida') ?>
+                      </p>
                         <p class="font-semibold text-lg text-gray-800 flex items-center gap-1">
                             <?= htmlspecialchars($av['nome_categoria']) ?> - Nota: 
                             <?php if(!empty($av['nota'])): ?>

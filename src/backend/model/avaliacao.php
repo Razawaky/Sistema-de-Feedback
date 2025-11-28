@@ -11,6 +11,7 @@ try {
     $emoji = $tipo === 'emoji' ? $_POST['emoji'] ?? null : null; // novo
     $comentario = trim($_POST['conteudo'] ?? '');
     $id_categoria = $_POST['id_categoria'] ?? null;
+    $id_empresa = $_POST['id_empresa'] ?? null;
 
     // Usuário logado ou anônimo
     $usuarioId = verificarSessao() ? $_SESSION['usuario']['id'] : null;
@@ -49,6 +50,28 @@ try {
         $comentario = 'Sem comentário';
     }
 
+    if (!$id_empresa || !is_numeric($id_empresa)) {
+    echo json_encode([
+        "codigo" => "EMPRESA_INVALIDA",
+        "mensagem" => "Selecione uma empresa válida."
+    ]);
+    exit;
+}
+
+    // Verificar se realmente é empresa
+    $existeEmpresa = executarConsulta(
+        "SELECT COUNT(*) FROM usuarios WHERE id_usuario = ? AND id_tipo = 2",
+        [$id_empresa]
+    )->fetchColumn();
+
+    if ($existeEmpresa == 0) {
+        echo json_encode([
+            "codigo" => "EMPRESA_INEXISTENTE",
+            "mensagem" => "A empresa selecionada não é válida."
+        ]);
+        exit;
+    }
+
     // Limite 1 avaliação por hash/IP/dia apenas para anônimos
     if ($anonima) {
         $hoje = date('Y-m-d');
@@ -68,9 +91,9 @@ try {
 
     // Inserir avaliação (agora com emoji)
     executarConsulta("
-        INSERT INTO avaliacoes (id_usuario, id_categoria, conteudo, nota, emoji, anonima, ip_usuario, data_avaliacao)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-    ", [$usuarioId, $id_categoria, $comentario, $nota, $emoji, $anonima, $ipHash]);
+        INSERT INTO avaliacoes (id_usuario, id_categoria, id_empresa, conteudo, nota, emoji, anonima, ip_usuario, data_avaliacao)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ", [$usuarioId, $id_categoria, $id_empresa, $comentario, $nota, $emoji, $anonima, $ipHash]);
 
     echo json_encode([
         "codigo" => "SUCESSO",
